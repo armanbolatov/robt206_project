@@ -21,11 +21,11 @@ int led3 = 4;
 void write_to_i2c(int n)
 {
   lcd.init();
-  lcd.clear();         
+  lcd.clear();
   lcd.backlight();
-  lcd.setCursor(2,0);
+  lcd.setCursor(2, 0);
   lcd.print("Current temperature:");
-  lcd.setCursor(2,1);
+  lcd.setCursor(2, 1);
   lcd.print(n);
   lcd.print(" mode");
 }
@@ -39,7 +39,7 @@ void setup()
   pinMode(led3, OUTPUT);
   door_servo.attach(door);
   // инициализируем текст на дисплее
-  write_to_i2c(0);  
+  write_to_i2c(0);
 }
 
 void loop()
@@ -51,17 +51,18 @@ void loop()
   int led1_status = valsRec[1];
   int led2_status = valsRec[2];
   int led3_status = valsRec[3];
-  int i2c_status =  valsRec[4];
+  int i2c_status  = valsRec[4];
   // пишем в дисплей значение температуры
-  write_to_i2c(i2c_status); 
+  write_to_i2c(i2c_status);
   if (door_status == 0) // если должна быть закрытой
   {
     door_servo.write(180); // вращаем мотор на 180
-    delay(500); // и ждем полсекунды 
-  } else // если должна быть открытой
+    delay(500);            // и ждем полсекунды
+  }
+  else // если должна быть открытой
   {
     door_servo.write(0); // вращаем мотор на 0
-    delay(500); // и ждем полсекунды 
+    delay(500);          // и ждем полсекунды
   }
   // обновляем статус света в комнатах
   digitalWrite(led1, led1_status);

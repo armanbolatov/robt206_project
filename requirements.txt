@@ -1,0 +1,4 @@
+pyaudio>=0.2
+pvporcupine>=2.1.2
+cv2>=4.5
+cvzone>=1.5.6
