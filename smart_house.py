@@ -2,17 +2,19 @@ import cv2
 import pvporcupine as pvp
 import pyaudio
 import struct
+import face_recognition as fr
+import dlib
+import os
 from cvzone.HandTrackingModule import HandDetector
 from cvzone.SerialModule import SerialObject
 
 
 def main():
-    # для чтения картинок с вебки
-    cap = cv2.VideoCapture(0)
-    # создаем детектор и ограничиваем макс. кол-во рук двумя
-    detector = HandDetector(detectionCon=0.8, maxHands=2)
-    # для взаимодействия с ардуино
-    arduino = SerialObject()
+
+    print(dlib.DLIB_USE_CUDA)  # проверить работает ли гпу
+    cap = cv2.VideoCapture(0)  # для чтения картинок с вебки
+    detector = HandDetector(detectionCon=0.8, maxHands=2)  # создаем детектор
+    arduino = SerialObject()  # для взаимодействия с ардуино
     # слова на которые будет реагировать программа
     keywords = ["jarvis", "bumblebee"]
     # для распознования ключевых слов в аудиофрейме
@@ -29,6 +31,20 @@ def main():
         input=True,
         frames_per_buffer=porcupine.frame_length
     )
+
+    known_faces_dir = "known_faces"  # директория с известными лицами
+    tolerance = 0.4  # порог для определения лица
+    model = "cnn"  # тип нейронки
+    print("loading known faces")
+    known_faces = []  # чтобы хранить известные лица
+    known_names = []  # чтобы хранить имена этих лиц
+
+    for name in os.listdir(known_faces_dir):
+        for filename in os.listdir(f"{known_faces_dir}/{name}"):
+            image = fr.load_image_file(f"{known_faces_dir}/{name}/{filename}")
+            encoding = fr.face_encodings(image)[0]
+            known_faces.append(encoding)
+            known_names.append(name)
 
     '''
     словарь хранящий статус дома
@@ -59,33 +75,60 @@ def main():
         (0, 1, 0, 0, 1): (0, 3),
     }
 
+    '''
+    если на текущем кадре нашли известное лицо, то
+    последующие n_iter кадров не будем проверять на лица.
+    это поможет ускорить вычисления. а следить за кол-вом
+    итераций будет переменная счетчик cur_iter
+    '''
+    cur_iter = n_iter = 100
+    match = False
+
     while True:
-        pcm = audio_stream.read(porcupine.frame_length)
+        if cur_iter <= n_iter:
+            cur_iter += 1  # увеличиваем счетчик
+
+        _, img = cap.read()  # читаем изображение с вебки
+
+        if cur_iter > n_iter:  # если прошло n_iter итераций
+            locations = fr.face_locations(
+                img, model=model)  # находим лица в кадре
+            encodings = fr.face_encodings(
+                img, locations)  # вытаскиваем фичи из лиц
+            for face_encoding, _ in zip(encodings, locations):
+                results = fr.compare_faces(
+                    known_faces, face_encoding, tolerance)
+                match = None
+                if True in results:  # если нашли известное лицо
+                    # находим имя этого лица
+                    match = known_names[results.index(True)]
+                    cur_iter = 0  # обнуляем счетчик
+                    print(f"Match found: {match}")
+
+            if not match:  # если не нашли знакомое лицо, то не выполняем ничего
+                cv2.imshow("Image", img)
+                cv2.waitKey(1)
+                continue
+
         # достаем текущий аудофрейм
+        pcm = audio_stream.read(porcupine.frame_length)
         audio_frame = struct.unpack_from("h" * porcupine.frame_length, pcm)
         # равен -1 если не произнесено слово из keywords
         keyword_index = porcupine.process(audio_frame)
 
-        # если произнесено jarvis
-        if keyword_index == 0:
+        if keyword_index == 0:  # если произнесено jarvis
             values["door"] = 1
-        # если прознесено bumblebee
-        if keyword_index == 1:
+        if keyword_index == 1:  # если прознесено bumblebee
             values["door"] = 0
 
-        # читаем изображение с вебки
-        success, img = cap.read()
-        # и ищем в ней руки
-        hands, img = detector.findHands(img)
+        hands, img = detector.findHands(img)  # ищем руки в текущем кадре
 
         if hands:
-            # если видим руку сохраняем значение в hands1
-            hand1 = hands[0]
-            # сохраняем пальцы первой руки
+            hand1 = hands[0]  # если видим руку, то сохраняем его в hands1
+            # и сохраняем пальцы первой руки
             fingers1 = detector.fingersUp(hand1)
 
-            if len(hands) > 1:
-                # если две руки то делаем то же самое для второй
+            if len(hands) > 1:  # если две руки, то делаем то же самое для второй
                 hand2 = hands[1]
                 fingers2 = detector.fingersUp(hand2)
             else:
@@ -98,8 +141,7 @@ def main():
                 hand1, hand2 = hand2, hand1
                 fingers1, fingers2 = fingers2, fingers1
 
-            # если пользователь показывает правую руку
-            if hand1:
+            if hand1:  # если пользователь показывает правую руку
                 # то читаем жест и обновляем соответствующее
                 # значение ключа ledi в values
                 t_fingers1 = tuple(fingers1)
@@ -108,8 +150,7 @@ def main():
                     led_name = f"led{room_number}"
                     values[led_name] = light_type
 
-            # если пользователь показывает левую руку
-            if hand2:
+            if hand2:  # если пользователь показывает левую руку
                 # то считаем количество согнутых пальцев
                 # и обновляем значение в i2c
                 num_fingers2 = sum(fingers2)
