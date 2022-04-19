@@ -2,7 +2,7 @@
 
 This repo contains the code of the ROBT 206 project work of group ❤️❤️❤️ (Aruzhan Sabyrbek, Daria Gole, Arman Bolatov).
 
-The project report is available at [this link](https://github.com/armanbolatov/robt206_project/robt206.pdf).
+The project report is available at [this link](https://github.com/armanbolatov/robt206_project/blob/main/robt206.pdf).
 
 ## Requirements for Python
 
@@ -10,12 +10,12 @@ The project report is available at [this link](https://github.com/armanbolatov/r
 - Picovoice Porcupine
 - OpenCV
 - CV Zone
+- Face Recognition
 
 ## Requirements for Arduino
 
 - [LiquidCrystal_I2C](https://www.arduinolibraries.info/libraries/liquid-crystal-i2-c)
 - [CV Zone](https://www.computervision.zone/courses/computer-vision-arduino-chapter-1/)
-
 
 ## How to use
 
