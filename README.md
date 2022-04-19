@@ -2,7 +2,7 @@
 
 This repo contains the code of the ROBT 206 project work of group ❤️❤️❤️ (Aruzhan Sabyrbek, Daria Gole, Arman Bolatov).
 
-Project report: *to be updated*.
+The project report is available at [this link](https://github.com/armanbolatov/robt206_project/robt206.pdf).
 
 ## Requirements for Python
 
