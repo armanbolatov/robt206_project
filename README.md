@@ -1,15 +1,15 @@
 # Gesture and Keyword Control of Smart House
 
-This repo contains the code of the ROBT 206 project work of group #2 (Aruzhan Sabyrbek, Daria Gole, Arman Bolatov).
+This repo contains the code of the ROBT 206 project work of group ❤️❤️❤️ (Aruzhan Sabyrbek, Daria Gole, Arman Bolatov).
 
 Project report: *to be updated*.
 
 ## Requirements for Python
 
-- `pyaudio >= 0.2`
-- `pvporcupine >= 2.1.2`
-- `cv2 >= 4.5`
-- `cvzone >= 1.5.6`
+- PyAudio
+- Picovoice Porcupine
+- OpenCV
+- CV Zone
 
 ## Requirements for Arduino
 
