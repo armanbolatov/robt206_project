@@ -24,7 +24,7 @@ void write_to_i2c(int n)
   lcd.clear();
   lcd.backlight();
   lcd.setCursor(2, 0);
-  lcd.print("Current temperature:");
+  lcd.print("Temperature:");
   lcd.setCursor(2, 1);
   lcd.print(n);
   lcd.print(" mode");
@@ -57,12 +57,12 @@ void loop()
   if (door_status == 0) // если должна быть закрытой
   {
     door_servo.write(180); // вращаем мотор на 180
-    delay(500);            // и ждем полсекунды
+    delay(300);            // и ждем полсекунды
   }
   else // если должна быть открытой
   {
     door_servo.write(0); // вращаем мотор на 0
-    delay(500);          // и ждем полсекунды
+    delay(300);          // и ждем полсекунды
   }
   // обновляем статус света в комнатах
   digitalWrite(led1, led1_status);

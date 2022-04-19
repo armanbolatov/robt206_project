@@ -16,7 +16,7 @@ def main():
     detector = HandDetector(detectionCon=0.8, maxHands=2)  # создаем детектор
     arduino = SerialObject()  # для взаимодействия с ардуино
     # слова на которые будет реагировать программа
-    keywords = ["jarvis", "bumblebee"]
+    keywords = ["alexa", "bumblebee"]
     # для распознования ключевых слов в аудиофрейме
     porcupine = pvp.create(
         access_key="M+nxBmCjzYc9nHkFmDeKX4lJC6GwUKJpl/UQz7COcJ0YWOxH2TtNSQ==",
@@ -33,7 +33,7 @@ def main():
     )
 
     known_faces_dir = "known_faces"  # директория с известными лицами
-    tolerance = 0.4  # порог для определения лица
+    tolerance = 0.6  # порог для определения лица
     model = "cnn"  # тип нейронки
     print("loading known faces")
     known_faces = []  # чтобы хранить известные лица
