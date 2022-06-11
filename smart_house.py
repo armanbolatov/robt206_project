@@ -19,7 +19,7 @@ def main():
     keywords = ["alexa", "bumblebee"]
     # для распознования ключевых слов в аудиофрейме
     porcupine = pvp.create(
-        access_key="M+nxBmCjzYc9nHkFmDeKX4lJC6GwUKJpl/UQz7COcJ0YWOxH2TtNSQ==",
+        access_key=os.getenv("PVP_TOKEN"),
         keywords=keywords,
     )
     # для чтения аудио с микрофона
